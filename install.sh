@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-readonly version="1.0.2"
+readonly version="1.0.3"
 
 # Read the userName
 read -p "Enter your NoIP.com userName: " userName

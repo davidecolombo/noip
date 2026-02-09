@@ -1,6 +1,6 @@
 {
 	"userName": "userName",
 	"password": "password",
-	"hostName": "hostName",
-	"userAgent": "NameOfUpdateProgram/VersionNumber maintainercontact@domain.com"
+	"hostName": "hostname.example.com",
+	"userAgent": "TestApp/1.0 maintainercontact@domain.com"
 }
