@@ -15,7 +15,7 @@ echo
 read -p "Enter your NoIP.com hostName: " hostName
 
 # Set a default value for the userAgent
-userAgent="NameOfUpdateProgram/VersionNumber maintainercontact@domain.com"
+userAgent="TestApp/1.0 maintainercontact@domain.com"
 
 # Read the userAgent, if provided
 read -p "Enter your userAgent ($userAgent): " -r userInput
