@@ -33,4 +33,4 @@ echo "{
 \"hostName\": \"${hostName}\",
 \"userAgent\": \"${userAgent}\"
 }" > ~/settings.json && \
-java -cp ~/noip.jar space.davidecolombo.noip.App -settings ~/settings.json
+java -cp ~/noip.jar io.github.davidecolombo.noip.App -settings ~/settings.json
