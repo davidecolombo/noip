@@ -1,0 +1,52 @@
+{
+	"responses": [
+		{
+			"status": "good",
+			"description": "DNS hostname update successful. Followed by a space and the IP address it was updated to.",
+			"successful": true,
+			"exitCode": 0
+		},
+		{
+			"status": "nochg",
+			"description": "IP address is current, no update performed. Followed by a space and the IP address that it is currently set to.",
+			"successful": true,
+			"exitCode": 1
+		},
+		{
+			"status": "nohost",
+			"description": "Hostname supplied does not exist under specified account, client exit and require user to enter new login credentials before performing an additional request.",
+			"successful": false,
+			"exitCode": 2
+		},
+		{
+			"status": "badauth",
+			"description": "Invalid username password combination",
+			"successful": false,
+			"exitCode": 3
+		},
+		{
+			"status": "badagent",
+			"description": "Client disabled. Client should exit and not perform any more updates without user intervention.",
+			"successful": false,
+			"exitCode": 4
+		},
+		{
+			"status": "!donator",
+			"description": "An update request was sent including a feature that is not available to that particular user such as offline options.",
+			"successful": false,
+			"exitCode": 5
+		},
+		{
+			"status": "abuse",
+			"description": "Username is blocked due to abuse. Either for not following our update specifications or disabled due to violation of the No-IP terms of service. Our terms of service can be viewed here. Client should stop sending updates.",
+			"successful": false,
+			"exitCode": 6
+		},
+		{
+			"status": "911",
+			"description": "A fatal error on our side such as a database outage. Retry the update no sooner than 30 minutes.",
+			"successful": false,
+			"exitCode": 7
+		}
+	]
+}
