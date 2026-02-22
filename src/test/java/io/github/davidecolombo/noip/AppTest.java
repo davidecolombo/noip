@@ -4,15 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import retrofit2.mock.Calls;
-import io.github.davidecolombo.noip.exception.ConfigurationException;
 import io.github.davidecolombo.noip.ipify.IpifyResponse;
 import io.github.davidecolombo.noip.noip.INoIpApi;
 import io.github.davidecolombo.noip.noip.NoIpApiImpl;
-import io.github.davidecolombo.noip.NoIpSettings;
 import io.github.davidecolombo.noip.utils.ObjectMapperUtils;
 
 import java.io.File;
@@ -21,6 +20,14 @@ import java.net.URL;
 
 @Slf4j
 class AppTest {
+
+    @BeforeEach
+    void clearEnvVars() {
+        System.clearProperty("NOIP_USERNAME");
+        System.clearProperty("NOIP_PASSWORD");
+        System.clearProperty("NOIP_HOSTNAME");
+        System.clearProperty("NOIP_USER_AGENT");
+    }
 
     @Test
     @ExpectSystemExitWithStatus(1)
@@ -73,13 +80,13 @@ class AppTest {
         }
     }
 
-	@Test
-	void shouldHandleNullArguments() {
-		// The improved error handling now catches null args gracefully
-		// and returns ERROR_RETURN_CODE (-1) instead of throwing
-		Integer result = App.getInstance().update(null);
-		Assertions.assertEquals(-1, result);
-	}
+    @Test
+    void shouldHandleNullArguments() {
+        // The improved error handling now catches null args gracefully
+        // and returns ERROR_RETURN_CODE (-1) instead of throwing
+        Integer result = App.getInstance().run(null);
+        Assertions.assertEquals(-1, result);
+    }
 
     @Test
     @ExpectSystemExitWithStatus(2)

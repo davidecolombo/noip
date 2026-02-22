@@ -1,36 +1,79 @@
 #!/bin/bash
 set -euo pipefail
+
+# No-IP Java Updater - Interactive Install Script
+# Usage: bash <(curl -s https://raw.githubusercontent.com/davidecolombo/noip/master/install.sh)
+
 readonly version="1.0.3"
+readonly jar_url="https://github.com/davidecolombo/noip/releases/download/v${version}/noip-${version}-jar-with-dependencies.jar"
+
+echo "No-IP Java Updater - Installation"
+echo "=================================="
+echo ""
 
 # Read the userName
 read -p "Enter your NoIP.com userName: " userName
 
-# Read the password, suppressing the input and displaying a prompt message
+# Read the password
 read -s -p "Enter your NoIP.com password: " password
+echo ""
 
-# Print a newline after the password is entered
-echo
+# Check if password is encrypted (starts with ENC()
+if [[ "$password" == ENC\(* ]]; then
+    read -s -p "Enter your encryption key (required for encrypted password): " encryptorKey
+    echo ""
+    
+    if [[ -z "$encryptorKey" ]]; then
+        echo "Error: encryption key is required when password is encrypted"
+        exit 1
+    fi
+fi
 
 # Read the hostName
 read -p "Enter your NoIP.com hostName: " hostName
 
 # Set a default value for the userAgent
-userAgent="TestApp/1.0 maintainercontact@domain.com"
-
-# Read the userAgent, if provided
+userAgent="NoIP-Java/1.0 no-reply@noip.local"
 read -p "Enter your userAgent ($userAgent): " -r userInput
-
-# If the user provided an input, use it
-if [ -n "$userInput" ]; then
-  userAgent="$userInput"
+if [[ -n "$userInput" ]]; then
+    userAgent="$userInput"
 fi
 
-wget -O ~/noip.jar \
-https://github.com/davidecolombo/noip/releases/download/v${version}/noip-${version}-jar-with-dependencies.jar && \
-echo "{
-\"userName\": \"${userName}\",
-\"password\": \"${password}\",
-\"hostName\": \"${hostName}\",
-\"userAgent\": \"${userAgent}\"
-}" > ~/settings.json && \
-java -cp ~/noip.jar io.github.davidecolombo.noip.App -settings ~/settings.json
+echo ""
+echo "Downloading noip.jar..."
+
+# Download the JAR
+mkdir -p ~/noip
+wget -q -O ~/noip/noip.jar "$jar_url"
+
+# Create settings.json
+if [[ -n "${encryptorKey:-}" ]]; then
+    cat > ~/noip/settings.json << EOF
+{
+  "userName": "$userName",
+  "password": "$password",
+  "hostName": "$hostName",
+  "userAgent": "$userAgent"
+}
+EOF
+else
+    cat > ~/noip/settings.json << EOF
+{
+  "userName": "$userName",
+  "password": "$password",
+  "hostName": "$hostName",
+  "userAgent": "$userAgent"
+}
+EOF
+fi
+
+echo "Configuration saved to ~/noip/settings.json"
+echo ""
+echo "Running No-IP update..."
+
+# Run with encrypted password if applicable
+if [[ -n "${encryptorKey:-}" ]]; then
+    NOIP_ENCRYPTOR_KEY="$encryptorKey" java -jar ~/noip/noip.jar -settings ~/noip/settings.json
+else
+    java -jar ~/noip/noip.jar -settings ~/noip/settings.json
+fi

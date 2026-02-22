@@ -15,8 +15,10 @@ public class CryptoUtils {
     private static final String ENC_SUFFIX = ")";
     private static final Pattern ENC_PATTERN = Pattern.compile("^ENC\\((.+)\\)$");
 
-    private static final String ENV_VAR_KEY = "NOIP_ENCRYPT_KEY";
-    private static final String SYSTEM_PROP_KEY = "noip.encrypt.key";
+    // Encryption key sources: CLI argument (via App class) has highest priority
+    // These are fallback sources when CLI key is not provided
+    private static final String ENV_VAR_KEY = "NOIP_ENCRYPTOR_KEY";
+    private static final String SYSTEM_PROP_KEY = "noip.encryptor.key";
 
     private static final String DEFAULT_ALGORITHM = "PBEWITHHMACSHA512ANDAES_256";
 
@@ -72,6 +74,10 @@ public class CryptoUtils {
         return encryptor;
     }
 
+    /**
+     * Gets encryption key from available sources.
+     * Priority: NOIP_ENCRYPTOR_KEY env var > noip.encryptor.key system property
+     */
     public static String getEncryptionKey() {
         String key = System.getenv(ENV_VAR_KEY);
         if (key != null && !key.isEmpty()) {

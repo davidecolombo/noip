@@ -1,5 +1,6 @@
 package io.github.davidecolombo.noip.noip;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import io.github.davidecolombo.noip.TestUtils;
 import io.github.davidecolombo.noip.exception.ConfigurationException;
@@ -10,6 +11,14 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
 
 class NoIpSettingsValidationTest {
+
+    @BeforeEach
+    void clearEnvVars() {
+        System.clearProperty("NOIP_USERNAME");
+        System.clearProperty("NOIP_PASSWORD");
+        System.clearProperty("NOIP_HOSTNAME");
+        System.clearProperty("NOIP_USER_AGENT");
+    }
 
     @Test
     void shouldValidateCorrectSettings() throws IOException {

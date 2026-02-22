@@ -24,8 +24,148 @@ One-liner to download, configure and execute:
 ```
 bash <(curl -s https://raw.githubusercontent.com/davidecolombo/noip/master/install.sh)
 ```
+
+## Password Encryption (Optional)
+
+For enhanced security, you can encrypt your password in the settings file instead of storing it as plaintext. The application uses AES-256 encryption with a master key that you provide at runtime.
+
+### Encrypting Your Password
+
+**Option 1: Using the CLI**
+
+```bash
+java -jar noip.jar -encrypt "your_plaintext_password" -encryptor-key "your_master_key"
+```
+
+**Option 2: Using the script (Windows)**
+
+```powershell
+.\encrypt.ps1 -Password "your_plaintext_password" -Key "your_master_key"
+```
+
+This will output something like:
+```
+ENC(xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)
+```
+
+### Configuration File
+
+Update your `settings.json` to use the encrypted password:
+
+```json
+{
+	"userName": "your_username",
+	"password": "ENC(xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)",
+	"hostName": "yourhost.ddns.net",
+	"userAgent": "MyApp/1.0 your@email.com"
+}
+```
+
+### Running with Encrypted Password
+
+Provide the master key at runtime using one of these methods (priority order):
+
+**1. CLI argument** (highest priority)
+```bash
+java -jar noip.jar -settings settings.json -encryptor-key "your_master_key"
+```
+
+**2. Environment variable**
+```bash
+export NOIP_ENCRYPTOR_KEY="your_master_key"
+java -jar noip.jar -settings settings.json
+```
+
+**3. System property** (lowest priority)
+```bash
+java -Dnoip.encryptor.key="your_master_key" -jar noip.jar -settings settings.json
+```
+
+### Additional CLI Commands
+
+- **Encrypt**: `-encrypt <password>` - Encrypt a plaintext password
+- **Decrypt**: `-decrypt <encrypted_value>` - Decrypt an encrypted value to verify
+- **Encryptor Key**: `-encryptor-key <key>` - Specify the encryption key (highest priority)
+
+### Security Notes
+
+- The master key is **never** stored in the configuration file
+- If the password does not start with `ENC(`, it is treated as plaintext (backward compatible)
+- Keep your master key safe - without it, the encrypted password cannot be decrypted
+- On Unix systems, consider using a `.env` file loaded by your cron job to set the environment variable
+
+## Environment Variables
+
+You can override settings from the JSON file using environment variables. Environment variables take precedence over file settings.
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `NOIP_USERNAME` | Override username | - |
+| `NOIP_PASSWORD` | Override password (plaintext) | - |
+| `NOIP_USER_AGENT` | Override user-agent | `NoIP-Java/1.0 no-reply@noip.local` |
+| `NOIP_HOSTNAME` | Override hostname | - |
+| `NOIP_ENCRYPTOR_KEY` | Encryption key for encrypted passwords | - |
+
+### Example
+
+```bash
+export NOIP_USERNAME="myuser"
+export NOIP_PASSWORD="mypass"
+export NOIP_USER_AGENT="MyApp/1.0 my@email.com"
+export NOIP_HOSTNAME="myhost.ddns.net"
+java -jar noip.jar -settings settings.json
+```
+
+### Priority Order
+
+For each setting, the priority is:
+1. Environment variable (highest)
+2. Encrypted password in file (for password only)
+3. Plaintext value in file (lowest)
+
+### Encryption Key Priority
+
+The encryption key is resolved in this order:
+1. CLI argument (`-encryptor-key`)
+2. Environment variable (`NOIP_ENCRYPTOR_KEY`)
+3. System property (`noip.encryptor.key`)
+
 ## Scheduling
 Please note you may want to schedule the application execution in order to keep updated your dynamic DNS, and the simplest way on *NIX systems is probably using [Cron](https://en.wikipedia.org/wiki/Cron). Example:
 ```
-*/30 * * * * sudo DISPLAY=:1 java -cp /home/user/noip.jar io.github.davidecolombo.noip.App -settings /home/user/settings.json > /home/user/noip-log.txt 2>&1
+*/30 * * * * sudo NOIP_ENCRYPTOR_KEY="your_master_key" java -cp /home/user/noip.jar io.github.davidecolombo.noip.App -settings /home/user/settings.json > /home/user/noip-log.txt 2>&1
 ```
+
+## Example Output
+
+Successful execution (IP unchanged - "nochg"):
+```
+Running No-IP updater with:
+  Username: <username>
+  Hostname: <hostname>
+
+SLF4J(I): Connected with provider of type [ch.qos.logback.classic.spi.LogbackServiceProvider]
+[main] INFO  u.o.l.s.context.SysOutOverSLF4J - Replaced standard System.out and System.err PrintStreams with SLF4JPrintStreams
+[main] INFO  u.o.l.s.context.SysOutOverSLF4J - Redirected System.out and System.err to SLF4J for this context
+[main] INFO  io.github.davidecolombo.noip.App - Starting No-IP update process with settings file: src\test\resources\settings.json
+[main] INFO  i.g.d.noip.noip.NoIpUpdater - No-IP configuration loaded and validated successfully
+[main] INFO  i.g.d.noip.noip.NoIpUpdater - Retrieving current IP address from Ipify API
+[main] INFO  i.g.d.noip.noip.NoIpUpdater - Retrieved IP address '<ip_address>' from Ipify in <time>ms
+[main] INFO  i.g.d.noip.noip.NoIpUpdater - Updating No-IP hostname '<hostname>' to IP address '<ip_address>'
+[main] INFO  i.g.d.noip.noip.NoIpUpdater - No-IP API request completed in <time>ms - HTTP status: 200 OK
+[main] INFO  i.g.d.noip.noip.NoIpUpdater - No-IP response for hostname '<hostname>': nochg <ip_address>
+[main] WARN  io.github.davidecolombo.noip.App - No-IP update completed with status code: 1
+[main] INFO  io.github.davidecolombo.noip.App - Application exiting with status code: 1
+```
+
+### Exit Codes
+
+| Code | Description |
+| --- | --- |
+| 0 | Success - IP address was updated |
+| 1 | Success - IP address is already up to date (nochg) |
+| 2 | Error - Invalid hostname |
+| 3 | Error - Authentication failed (badauth) |
+| -1 | Error - Unexpected error |
+
+Or using a wrapper script that sets the environment variable:

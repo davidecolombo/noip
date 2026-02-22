@@ -71,7 +71,7 @@ public class NoIpUpdater {
         try {
             INoIpApi api = NoIpApiImpl.create(
                     settings.getUserName(),
-                    settings.getEffectivePassword(),
+                    settings.getPassword(),
                     settings.getUserAgent()
             ).create(INoIpApi.class);
             
@@ -130,24 +130,33 @@ public class NoIpUpdater {
         }
     }
 
-    public static Integer updateFromIpify(@NonNull String fileName) throws IOException {
+    public static Integer updateFromIpify(String fileName) throws IOException {
         
-        logger.debug("Loading No-IP settings from file: {}", fileName);
-        
-        // Build settings
         ObjectMapper objectMapper = ObjectMapperUtils.createObjectMapper();
         NoIpSettings noIpSettings;
-        try {
-            noIpSettings = objectMapper.readValue(new File(fileName), NoIpSettings.class);
-            objectMapper.readerForUpdating(noIpSettings).readValue(NoIpUpdater.class.getClassLoader().getResource(RESPONSES_FILE));
-            
-            // Validate configuration
-            noIpSettings.validate();
-            logger.info("No-IP configuration loaded and validated successfully");
-            
-        } catch (IOException e) {
-            throw new ConfigurationException("Failed to load or parse settings file: " + fileName, e);
+        
+        if (fileName == null || fileName.trim().isEmpty()) {
+            logger.debug("No settings file provided, using environment variables only");
+            noIpSettings = new NoIpSettings();
+        } else {
+            logger.debug("Loading No-IP settings from file: {}", fileName);
+            try {
+                noIpSettings = objectMapper.readValue(new File(fileName), NoIpSettings.class);
+            } catch (IOException e) {
+                throw new ConfigurationException("Failed to load or parse settings file: " + fileName, e);
+            }
         }
+        
+        // Load responses from default resource (required for response mapping)
+        try {
+            objectMapper.readerForUpdating(noIpSettings).readValue(NoIpUpdater.class.getClassLoader().getResource(RESPONSES_FILE));
+        } catch (IOException e) {
+            throw new ConfigurationException("Failed to load responses configuration", e);
+        }
+        
+        // Validate configuration
+        noIpSettings.validate();
+        logger.info("No-IP configuration loaded and validated successfully");
 
         // Get Ipify response
         logger.info("Retrieving current IP address from Ipify API");
