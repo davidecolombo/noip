@@ -29,7 +29,13 @@ bash <(curl -s https://raw.githubusercontent.com/davidecolombo/noip/master/insta
 
 **Windows (PowerShell):**
 ```powershell
-powershell -Command "Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/davidecolombo/noip/master/install.ps1' | Invoke-Expression"
+powershell -ExecutionPolicy Bypass -Command "Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/davidecolombo/noip/master/install.ps1' | Invoke-Expression"
+```
+
+Or download and run locally:
+```powershell
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/davidecolombo/noip/master/install.ps1' -OutFile install.ps1
+.\install.ps1
 ```
 
 ## Password Encryption (Optional)
