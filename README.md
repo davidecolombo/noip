@@ -21,8 +21,15 @@ NameOfUpdateProgram/VersionNumber maintainercontact@domain.com
 ```
 ## Quick Start
 One-liner to download, configure and execute:
-```
+
+**Linux:**
+```bash
 bash <(curl -s https://raw.githubusercontent.com/davidecolombo/noip/master/install.sh)
+```
+
+**Windows (PowerShell):**
+```powershell
+powershell -Command "Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/davidecolombo/noip/master/install.ps1' | Invoke-Expression"
 ```
 
 ## Password Encryption (Optional)

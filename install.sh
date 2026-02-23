@@ -47,8 +47,7 @@ mkdir -p ~/noip
 wget -q -O ~/noip/noip.jar "$jar_url"
 
 # Create settings.json
-if [[ -n "${encryptorKey:-}" ]]; then
-    cat > ~/noip/settings.json << EOF
+cat > ~/noip/settings.json << EOF
 {
   "userName": "$userName",
   "password": "$password",
@@ -56,16 +55,6 @@ if [[ -n "${encryptorKey:-}" ]]; then
   "userAgent": "$userAgent"
 }
 EOF
-else
-    cat > ~/noip/settings.json << EOF
-{
-  "userName": "$userName",
-  "password": "$password",
-  "hostName": "$hostName",
-  "userAgent": "$userAgent"
-}
-EOF
-fi
 
 echo "Configuration saved to ~/noip/settings.json"
 echo ""
