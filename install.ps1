@@ -1,7 +1,7 @@
 # No-IP Java Updater - Interactive Install Script (Windows)
 # Usage: powershell -Command "Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/davidecolombo/noip/master/install.ps1' | Invoke-Expression"
 
-$version = "1.0.3"
+$version = "1.0.4"
 $jarUrl = "https://github.com/davidecolombo/noip/releases/download/v${version}/noip-${version}-jar-with-dependencies.jar"
 
 Write-Host "No-IP Java Updater - Installation" -ForegroundColor Cyan
@@ -33,6 +33,10 @@ $userAgent = "NoIP-Java/1.0 no-reply@noip.local"
 $userInput = Read-Host "Enter your userAgent ($userAgent)"
 if ($userInput) { $userAgent = $userInput }
 
+$ipProtocol = "dual"
+$userInput = Read-Host "Enter IP protocol (ipv4, ipv6, or dual) [$ipProtocol]"
+if ($userInput) { $ipProtocol = $userInput }
+
 Write-Host ""
 Write-Host "Downloading noip.jar..." -ForegroundColor Yellow
 
@@ -46,6 +50,7 @@ $settingsJson = @{
     password = $password
     hostName = $hostName
     userAgent = $userAgent
+    ipProtocol = $ipProtocol
 } | ConvertTo-Json
 
 Set-Content -Path "$noipDir\settings.json" -Value $settingsJson

@@ -31,7 +31,9 @@ public class NoIpUpdater {
     /*
      * IPIFY is a simple public IP address API
      */
-    private static final String IPIFY_URL = "https://api.ipify.org/?format=json";
+    private static final String IPIFY_URL_IPV4 = "https://api.ipify.org?format=json";
+    private static final String IPIFY_URL_IPV6 = "https://api6.ipify.org?format=json";
+    private static final String IPIFY_URL_DUAL = "https://api64.ipify.org?format=json";
 
     /*
      * Used to load No-IP responses
@@ -60,8 +62,14 @@ public class NoIpUpdater {
         if (ip == null) {
             throw new IllegalArgumentException("IP address cannot be null");
         }
-        if (!IpUtils.isIPv4Address(ip)) {
-            throw new IllegalArgumentException("IP '" + ip + "' is not a valid IPv4 address");
+        
+        NoIpSettings.IpProtocol protocol = settings.getIpProtocol();
+        boolean isValid = (protocol == NoIpSettings.IpProtocol.IPV4 && IpUtils.isIPv4Address(ip))
+                || (protocol == NoIpSettings.IpProtocol.IPV6 && IpUtils.isIPv6Address(ip))
+                || (protocol == NoIpSettings.IpProtocol.DUAL && (IpUtils.isIPv4Address(ip) || IpUtils.isIPv6Address(ip)));
+        
+        if (!isValid) {
+            throw new IllegalArgumentException("IP '" + ip + "' is not a valid address for protocol: " + protocol.getValue());
         }
 
         logger.info("Updating No-IP hostname '{}' to IP address '{}'", settings.getHostName(), ip);
@@ -158,12 +166,29 @@ public class NoIpUpdater {
         noIpSettings.validate();
         logger.info("No-IP configuration loaded and validated successfully");
 
+        // Select Ipify URL based on ipProtocol setting
+        NoIpSettings.IpProtocol protocol = noIpSettings.getIpProtocol();
+        String ipifyUrl;
+        switch (protocol) {
+            case IPV4:
+                ipifyUrl = IPIFY_URL_IPV4;
+                break;
+            case IPV6:
+                ipifyUrl = IPIFY_URL_IPV6;
+                break;
+            case DUAL:
+            default:
+                ipifyUrl = IPIFY_URL_DUAL;
+                break;
+        }
+        logger.info("Using Ipify URL '{}' for protocol: {}", ipifyUrl, protocol.getValue());
+
         // Get Ipify response
         logger.info("Retrieving current IP address from Ipify API");
         IpifyResponse ipifyResponse;
         long startTime = System.currentTimeMillis();
         try {
-            ipifyResponse = objectMapper.readValue(new URL(IPIFY_URL), IpifyResponse.class);
+            ipifyResponse = objectMapper.readValue(new URL(ipifyUrl), IpifyResponse.class);
             long duration = System.currentTimeMillis() - startTime;
             logger.info("Retrieved IP address '{}' from Ipify in {}ms", ipifyResponse.getIp(), duration);
             

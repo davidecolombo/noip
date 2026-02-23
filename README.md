@@ -14,11 +14,41 @@ This is a Java DNS updater for [No-IP](https://www.noip.com/), an alternative to
 | _password_ | your No-IP password |
 | _hostName_ | the hostname(s) (host.domain.com) or group(s) (group_name) to be updated |
 | _userAgent_ | HTTP User-Agent to help No-IP identify your client |
+| _ipProtocol_ | IP protocol to use: `ipv4`, `ipv6`, or `dual` (default) |
 
 Note: when making an update it’s important to configure through the `userAgent` property an HTTP User-Agent in order to help No-IP identify different clients that access the system. Clients that don’t supply a User-Agent risk being blocked from the system. Your user agent should be in the following format:
 ```
 NameOfUpdateProgram/VersionNumber maintainercontact@domain.com
 ```
+
+## IP Protocol
+
+The `ipProtocol` setting allows you to choose which IP address type to use when updating your No-IP hostname:
+
+| Value | Ipify API Endpoint | Description |
+| --- | --- | --- |
+| `ipv4` | api.ipify.org | IPv4 only |
+| `ipv6` | api6.ipify.org | IPv6 only |
+| `dual` (default) | api64.ipify.org | Returns either IPv4 or IPv6 based on your network |
+
+Example `settings.json`:
+```json
+{
+	"userName": "your_username",
+	"password": "your_password",
+	"hostName": "yourhost.ddns.net",
+	"userAgent": "MyApp/1.0 your@email.com",
+	"ipProtocol": "dual"
+}
+```
+
+You can also override this setting using the environment variable `NOIP_IP_PROTOCOL`:
+```bash
+export NOIP_IP_PROTOCOL=ipv6
+```
+
+**Default:** `dual` (automatically detects IPv4/IPv6)
+
 ## Quick Start
 One-liner to download, configure and execute:
 
@@ -117,6 +147,7 @@ You can override settings from the JSON file using environment variables. Enviro
 | `NOIP_PASSWORD` | Override password (plaintext) | - |
 | `NOIP_USER_AGENT` | Override user-agent | `NoIP-Java/1.0 no-reply@noip.local` |
 | `NOIP_HOSTNAME` | Override hostname | - |
+| `NOIP_IP_PROTOCOL` | Override IP protocol (`ipv4`, `ipv6`, `dual`) | `dual` |
 | `NOIP_ENCRYPTOR_KEY` | Encryption key for encrypted passwords | - |
 
 ### Example
@@ -126,6 +157,7 @@ export NOIP_USERNAME="myuser"
 export NOIP_PASSWORD="mypass"
 export NOIP_USER_AGENT="MyApp/1.0 my@email.com"
 export NOIP_HOSTNAME="myhost.ddns.net"
+export NOIP_IP_PROTOCOL="ipv6"
 java -jar noip.jar -settings settings.json
 ```
 
@@ -135,6 +167,10 @@ For each setting, the priority is:
 1. Environment variable (highest)
 2. Encrypted password in file (for password only)
 3. Plaintext value in file (lowest)
+
+For `ipProtocol`, the priority is:
+1. Environment variable (`NOIP_IP_PROTOCOL`)
+2. Value in settings file (`dual` by default)
 
 ### Encryption Key Priority
 

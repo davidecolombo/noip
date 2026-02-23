@@ -10,6 +10,15 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Integration tests for encrypted password handling.
+ * 
+ * These tests verify that the application correctly handles both
+ * encrypted and plaintext passwords in the settings file:
+ * - Decrypts encrypted passwords using the provided key
+ * - Preserves plaintext passwords as-is
+ * - Fails gracefully when decryption key is wrong
+ */
 class EncryptedPasswordIntegrationTest {
 
     @BeforeEach
@@ -21,6 +30,13 @@ class EncryptedPasswordIntegrationTest {
         System.clearProperty("NOIP_USER_AGENT");
     }
 
+    /**
+     * Tests that encrypted passwords are correctly decrypted when loaded.
+     * 
+     * When the encryption key is provided via system property and the settings
+     * file contains an encrypted password (ENC(...)), the password should be
+     * decrypted and available in plain text.
+     */
     @Test
     void shouldReadSettingsWithEncryptedPassword() throws IOException {
         System.setProperty("noip.encryptor.key", "TestKey123");
@@ -39,6 +55,12 @@ class EncryptedPasswordIntegrationTest {
         }
     }
 
+    /**
+     * Tests that plaintext passwords are preserved when no encryption key is set.
+     * 
+     * When the settings file contains a plaintext password and no encryption
+     * key is provided, the password should be returned as-is.
+     */
     @Test
     void shouldReadSettingsWithPlaintextPassword() throws IOException {
         System.clearProperty("noip.encryptor.key");
@@ -53,6 +75,12 @@ class EncryptedPasswordIntegrationTest {
         org.junit.jupiter.api.Assertions.assertEquals("password", effectivePassword);
     }
 
+    /**
+     * Tests that decryption fails when the wrong key is provided.
+     * 
+     * When the encryption key doesn't match the one used to encrypt the
+     * password, attempting to get the password should throw an exception.
+     */
     @Test
     void shouldFailToDecryptWithWrongKey() throws IOException {
         System.setProperty("noip.encryptor.key", "WrongKey");

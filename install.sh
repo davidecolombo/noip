@@ -4,7 +4,7 @@ set -euo pipefail
 # No-IP Java Updater - Interactive Install Script
 # Usage: bash <(curl -s https://raw.githubusercontent.com/davidecolombo/noip/master/install.sh)
 
-readonly version="1.0.3"
+readonly version="1.0.4"
 readonly jar_url="https://github.com/davidecolombo/noip/releases/download/v${version}/noip-${version}-jar-with-dependencies.jar"
 
 echo "No-IP Java Updater - Installation"
@@ -39,6 +39,14 @@ if [[ -n "$userInput" ]]; then
     userAgent="$userInput"
 fi
 
+# Set a default value for ipProtocol
+ipProtocol="dual"
+echo ""
+read -p "Enter IP protocol (ipv4, ipv6, or dual) [$ipProtocol]: " -r userInput
+if [[ -n "$userInput" ]]; then
+    ipProtocol="$userInput"
+fi
+
 echo ""
 echo "Downloading noip.jar..."
 
@@ -52,7 +60,8 @@ cat > ~/noip/settings.json << EOF
   "userName": "$userName",
   "password": "$password",
   "hostName": "$hostName",
-  "userAgent": "$userAgent"
+  "userAgent": "$userAgent",
+  "ipProtocol": "$ipProtocol"
 }
 EOF
 

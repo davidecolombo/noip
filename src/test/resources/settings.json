@@ -2,5 +2,6 @@
 	"userName": "userName",
 	"password": "password",
 	"hostName": "hostname.example.com",
-	"userAgent": "TestApp/1.0 maintainercontact@domain.com"
+	"userAgent": "TestApp/1.0 maintainercontact@domain.com",
+	"ipProtocol": "dual"
 }

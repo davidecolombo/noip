@@ -1,8 +1,10 @@
 package io.github.davidecolombo.noip;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
@@ -21,14 +23,46 @@ import java.util.regex.Pattern;
 	"password",
 	"hostName",
 	"userAgent",
+	"ipProtocol",
 	"responses"
 })
 public class NoIpSettings {
+
+	public enum IpProtocol {
+		IPV4("ipv4"),
+		IPV6("ipv6"),
+		DUAL("dual");
+
+		private final String value;
+
+		IpProtocol(String value) {
+			this.value = value;
+		}
+
+		@JsonValue
+		public String getValue() {
+			return value;
+		}
+
+		@JsonCreator
+		public static IpProtocol fromValue(String value) {
+			if (value == null) {
+				return DUAL;
+			}
+			for (IpProtocol protocol : IpProtocol.values()) {
+				if (protocol.value.equalsIgnoreCase(value)) {
+					return protocol;
+				}
+			}
+			return DUAL;
+		}
+	}
 
 	@JsonProperty("userName") private String userName;
 	@JsonProperty("password") private String password;
 	@JsonProperty("hostName") private String hostName;
 	@JsonProperty("userAgent") private String userAgent;
+	@JsonProperty("ipProtocol") private IpProtocol ipProtocol;
 	@JsonProperty("responses") private List<NoIpResponse> responses;
 
 	private static final Pattern USER_AGENT_PATTERN = 
@@ -39,6 +73,7 @@ public class NoIpSettings {
 	private static final String ENV_PASSWORD = "NOIP_PASSWORD";
 	private static final String ENV_USER_AGENT = "NOIP_USER_AGENT";
 	private static final String ENV_HOSTNAME = "NOIP_HOSTNAME";
+	private static final String ENV_IP_PROTOCOL = "NOIP_IP_PROTOCOL";
 
 	// Fallback user-agent when not provided via env var or config file
 	private static final String DEFAULT_USER_AGENT = "NoIP-Java/1.0 no-reply@noip.local";
@@ -108,6 +143,17 @@ public class NoIpSettings {
 		return responses;
 	}
 
+	/**
+	 * Gets IP protocol. Environment variable takes precedence over config file.
+	 * Falls back to dual if neither is provided.
+	 * Priority: NOIP_IP_PROTOCOL env var > config file > dual (default)
+	 */
+	public IpProtocol getIpProtocol() {
+		String envValue = System.getenv(ENV_IP_PROTOCOL);
+		String effectiveValue = (envValue != null && !envValue.isEmpty()) ? envValue : (ipProtocol != null ? ipProtocol.getValue() : null);
+		return IpProtocol.fromValue(effectiveValue);
+	}
+
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
@@ -122,6 +168,10 @@ public class NoIpSettings {
 
 	public void setUserAgent(String userAgent) {
 		this.userAgent = userAgent;
+	}
+
+	public void setIpProtocol(IpProtocol ipProtocol) {
+		this.ipProtocol = ipProtocol;
 	}
 
 	public void setResponses(List<NoIpResponse> responses) {

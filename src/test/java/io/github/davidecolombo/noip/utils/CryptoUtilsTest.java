@@ -5,11 +5,31 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for CryptoUtils encryption/decryption functionality.
+ * 
+ * These tests verify the AES-256 encryption implementation:
+ * - Password encryption produces encrypted format (ENC(...))
+ * - Decryption with correct key recovers original password
+ * - Round-trip encryption/decryption preserves data
+ * - Encrypted vs plaintext detection works correctly
+ * - Null and empty value handling
+ * - Wrong key fails to decrypt
+ */
 class CryptoUtilsTest {
 
     private static final String TEST_KEY = "TestEncryptionKey123";
     private static final String TEST_PASSWORD = "MySecretPassword";
 
+    /**
+     * Tests that encryption produces the expected format.
+     * 
+     * The encrypted output should:
+     * - Not be null
+     * - Start with "ENC(" prefix
+     * - End with ")" suffix
+     * - Be different from the original password
+     */
     @Test
     void shouldEncryptPassword() {
         String encrypted = CryptoUtils.encrypt(TEST_PASSWORD, TEST_KEY);
@@ -20,6 +40,9 @@ class CryptoUtilsTest {
         assertNotEquals(TEST_PASSWORD, encrypted);
     }
 
+    /**
+     * Tests that decryption with correct key recovers the original password.
+     */
     @Test
     void shouldDecryptPassword() {
         String encrypted = CryptoUtils.encrypt(TEST_PASSWORD, TEST_KEY);
@@ -28,6 +51,12 @@ class CryptoUtilsTest {
         assertEquals(TEST_PASSWORD, decrypted);
     }
 
+    /**
+     * Tests round-trip encryption/decryption with various password formats.
+     * 
+     * Verifies that different types of passwords (simple, complex, unicode,
+     * short, long) can be encrypted and decrypted correctly.
+     */
     @Test
     void shouldRoundTripEncryptDecrypt() {
         String[] passwords = {
@@ -46,12 +75,23 @@ class CryptoUtilsTest {
         }
     }
 
+    /**
+     * Tests that isEncrypted() correctly identifies encrypted values.
+     * 
+     * Values in ENC(...) format should be detected as encrypted.
+     */
     @Test
     void shouldDetectEncryptedValue() {
         String encrypted = CryptoUtils.encrypt(TEST_PASSWORD, TEST_KEY);
         assertTrue(CryptoUtils.isEncrypted(encrypted));
     }
 
+    /**
+     * Tests that isEncrypted() correctly identifies plaintext values.
+     * 
+     * Plaintext values (including invalid ENC prefixes) should not be
+     * detected as encrypted.
+     */
     @Test
     void shouldDetectPlainTextValue() {
         assertFalse(CryptoUtils.isEncrypted(TEST_PASSWORD));
@@ -61,6 +101,12 @@ class CryptoUtilsTest {
         assertFalse(CryptoUtils.isEncrypted("ENC)"));
     }
 
+    /**
+     * Tests that null values are handled gracefully.
+     * 
+     * Encryption/decryption/isEncrypted should handle null inputs
+     * without throwing exceptions.
+     */
     @Test
     void shouldHandleNullValues() {
         assertNull(CryptoUtils.encrypt(null, TEST_KEY));
@@ -68,6 +114,9 @@ class CryptoUtilsTest {
         assertFalse(CryptoUtils.isEncrypted(null));
     }
 
+    /**
+     * Tests that empty string values are handled gracefully.
+     */
     @Test
     void shouldHandleEmptyValues() {
         assertEquals("", CryptoUtils.encrypt("", TEST_KEY));
@@ -75,6 +124,12 @@ class CryptoUtilsTest {
         assertFalse(CryptoUtils.isEncrypted(""));
     }
 
+    /**
+     * Tests that decryption fails when the wrong key is provided.
+     * 
+     * Using a different key than the one used for encryption should
+     * throw an exception.
+     */
     @Test
     void shouldFailDecryptWithWrongKey() {
         String encrypted = CryptoUtils.encrypt(TEST_PASSWORD, TEST_KEY);
@@ -84,6 +139,12 @@ class CryptoUtilsTest {
         });
     }
 
+    /**
+     * Tests that plaintext values are returned as-is when "decrypted".
+     * 
+     * The decrypt method should detect plaintext (non-ENC format) and
+     * return it unchanged rather than attempting decryption.
+     */
     @Test
     void shouldKeepPlainTextAsIsWhenDecrypting() {
         String plaintext = "JustAPlainText";
@@ -92,6 +153,12 @@ class CryptoUtilsTest {
         assertEquals(plaintext, result);
     }
 
+    /**
+     * Tests that encrypted values with surrounding whitespace are handled.
+     * 
+     * The decrypt method should trim whitespace from encrypted values
+     * before processing.
+     */
     @Test
     void shouldTrimEncryptedValue() {
         String encrypted = CryptoUtils.encrypt(TEST_PASSWORD, TEST_KEY);
@@ -101,6 +168,9 @@ class CryptoUtilsTest {
         assertEquals(TEST_PASSWORD, decrypted);
     }
 
+    /**
+     * Tests that hasEncryptionKey() returns false when no key is set.
+     */
     @Test
     void shouldReturnFalseWhenCheckingForKeyIfNotSet() {
         assertFalse(CryptoUtils.hasEncryptionKey());

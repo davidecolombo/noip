@@ -18,6 +18,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+/**
+ * Tests for the main application entry point (App class).
+ * 
+ * These tests verify the command-line interface behavior and the main
+ * application flow including:
+ * - Command-line argument parsing
+ * - System exit codes
+ * - Error handling for missing arguments
+ * - Integration with mocked No-IP and Ipify APIs
+ */
 @Slf4j
 class AppTest {
 
@@ -29,6 +39,15 @@ class AppTest {
         System.clearProperty("NOIP_USER_AGENT");
     }
 
+    /**
+     * Tests the main application flow when updating DNS with an unchanged IP.
+     * 
+     * This test verifies the complete application flow:
+     * 1. Loads settings from file
+     * 2. Retrieves current IP from Ipify (mocked)
+     * 3. Updates No-IP DNS (mocked to return "nochg")
+     * 4. Exits with status code 1 (IP unchanged)
+     */
     @Test
     @ExpectSystemExitWithStatus(1)
     void testSystemExitWithStatus() throws IOException {
@@ -80,6 +99,12 @@ class AppTest {
         }
     }
 
+    /**
+     * Tests that the application handles null arguments gracefully.
+     * 
+     * When run() is called with null arguments, it should return
+     * ERROR_RETURN_CODE (-1) instead of throwing an exception.
+     */
     @Test
     void shouldHandleNullArguments() {
         // The improved error handling now catches null args gracefully
@@ -88,6 +113,12 @@ class AppTest {
         Assertions.assertEquals(-1, result);
     }
 
+    /**
+     * Tests that the application exits with code 2 when no arguments are provided.
+     * 
+     * When the application is run without required arguments, it should
+     * display usage information and exit with code 2.
+     */
     @Test
     @ExpectSystemExitWithStatus(2)
     void shouldThrowCmdLineException() {

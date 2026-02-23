@@ -9,8 +9,20 @@ import io.github.davidecolombo.noip.TestUtils;
 
 import java.io.IOException;
 
+/**
+ * Unit tests for INoIpApi interface.
+ * 
+ * Tests that the Retrofit API interface correctly calls the No-IP
+ * update endpoint and returns the response.
+ */
 class INoIpApiTest {
 
+    /**
+     * Tests that the API correctly calls the No-IP update endpoint.
+     * 
+     * Verifies that when update() is called with hostname and IP,
+     * the Retrofit mock returns the configured response.
+     */
     @Test
     void shouldUpdateNoIpAddress() throws IOException {
 

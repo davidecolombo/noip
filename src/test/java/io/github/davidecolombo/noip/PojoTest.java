@@ -12,8 +12,28 @@ import io.github.davidecolombo.noip.ipify.IpifyResponse;
 import io.github.davidecolombo.noip.NoIpResponse;
 import io.github.davidecolombo.noip.NoIpSettings;
 
+/**
+ * Tests for POJO (Plain Old Java Object) structure and behavior.
+ * 
+ * Uses OpenPOJO library to validate that model classes follow proper
+ * Java bean conventions:
+ * - All fields have getters
+ * - All fields have setters (except static final)
+ * - No public fields (except static final constants)
+ * 
+ * Classes tested: IpifyResponse, NoIpResponse, NoIpSettings
+ */
 class PojoTest {
 
+    /**
+     * Validates that all model classes have proper POJO structure.
+     * 
+     * For each class (IpifyResponse, NoIpResponse, NoIpSettings),
+     * verifies:
+     * - Getter methods exist for all fields
+     * - Setter methods exist for all fields
+     * - No public non-static final fields
+     */
     @Test
     void testPojoStructureAndBehavior() {
         for (Class<?> clazz : new Class[]{
