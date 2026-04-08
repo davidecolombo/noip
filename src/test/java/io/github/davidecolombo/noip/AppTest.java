@@ -12,11 +12,12 @@ import retrofit2.mock.Calls;
 import io.github.davidecolombo.noip.ipify.IpifyResponse;
 import io.github.davidecolombo.noip.noip.INoIpApi;
 import io.github.davidecolombo.noip.noip.NoIpApiImpl;
+import io.github.davidecolombo.noip.noip.NoIpUpdater;
 import io.github.davidecolombo.noip.utils.ObjectMapperUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 
 /**
  * Tests for the main application entry point (App class).
@@ -53,7 +54,8 @@ class AppTest {
     void testSystemExitWithStatus() throws IOException {
 
         try (MockedStatic<NoIpApiImpl> mockedApi = Mockito.mockStatic(NoIpApiImpl.class);
-             MockedStatic<ObjectMapperUtils> mockedJsonUtils = Mockito.mockStatic(ObjectMapperUtils.class)) {
+             MockedStatic<ObjectMapperUtils> mockedJsonUtils = Mockito.mockStatic(ObjectMapperUtils.class);
+             MockedStatic<NoIpUpdater> mockedUpdater = Mockito.mockStatic(NoIpUpdater.class, Mockito.CALLS_REAL_METHODS)) {
 
             retrofit2.Retrofit retrofit = Mockito.mock(retrofit2.Retrofit.class);
             INoIpApi api = Mockito.mock(INoIpApi.class);
@@ -70,6 +72,9 @@ class AppTest {
                     Mockito.any() // user-agent
             )).thenReturn(retrofit);
 
+            mockedUpdater.when(() -> NoIpUpdater.openIpifyStream(Mockito.anyString()))
+                    .thenReturn(InputStream.nullInputStream());
+
             ObjectMapper objectMapper = Mockito.mock(
                     ObjectMapper.class,
                     Mockito.RETURNS_DEEP_STUBS);
@@ -85,7 +90,7 @@ class AppTest {
             IpifyResponse mockedIpifyResponse = new IpifyResponse();
             mockedIpifyResponse.setIp(TestUtils.LOOPBACK_ADDRESS);
             Mockito.when(objectMapper.readValue(
-                            Mockito.any(URL.class),
+                            Mockito.any(InputStream.class),
                             Mockito.eq(IpifyResponse.class)))
                     .thenReturn(mockedIpifyResponse);
 
@@ -109,7 +114,7 @@ class AppTest {
     void shouldHandleNullArguments() {
         // The improved error handling now catches null args gracefully
         // and returns ERROR_RETURN_CODE (-1) instead of throwing
-        Integer result = App.getInstance().run(null);
+        Integer result = new App().run(null);
         Assertions.assertEquals(-1, result);
     }
 

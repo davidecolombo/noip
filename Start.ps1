@@ -24,7 +24,7 @@ if ($missing.Count -gt 0) {
     Write-Host '  $env:NOIP_PASSWORD = "mypass"'
     Write-Host '  $env:NOIP_HOSTNAME = "myhost.ddns.net"'
     Write-Host '  $env:NOIP_IP_PROTOCOL = "dual"'
-    Write-Host '  .\run.ps1'
+    Write-Host '  .\Start.ps1'
     exit 1
 }
 
@@ -34,7 +34,7 @@ if ($env:NOIP_PASSWORD -match "^ENC\(.*\)$" -and -not $env:NOIP_ENCRYPTOR_KEY) {
     Write-Host ""
     Write-Host "Example:"
     Write-Host '  $env:NOIP_ENCRYPTOR_KEY = "your_encryption_key"'
-    Write-Host '  .\run.ps1'
+    Write-Host '  .\Start.ps1'
     exit 1
 }
 

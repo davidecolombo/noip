@@ -52,20 +52,15 @@ export NOIP_IP_PROTOCOL=ipv6
 ## Quick Start
 One-liner to download, configure and execute:
 
-**Linux:**
-```bash
-bash <(curl -s https://raw.githubusercontent.com/davidecolombo/noip/master/install.sh)
-```
-
 **Windows (PowerShell):**
 ```powershell
-powershell -ExecutionPolicy Bypass -Command "Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/davidecolombo/noip/master/install.ps1' | Invoke-Expression"
+powershell -ExecutionPolicy Bypass -Command "Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/davidecolombo/noip/master/Install.ps1' | Invoke-Expression"
 ```
 
 Or download and run locally:
 ```powershell
-Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/davidecolombo/noip/master/install.ps1' -OutFile install.ps1
-.\install.ps1
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/davidecolombo/noip/master/Install.ps1' -OutFile Install.ps1
+.\Install.ps1
 ```
 
 ## Password Encryption (Optional)
@@ -83,7 +78,7 @@ java -jar noip.jar -encrypt "your_plaintext_password" -encryptor-key "your_maste
 **Option 2: Using the script (Windows)**
 
 ```powershell
-.\encrypt.ps1 -Password "your_plaintext_password" -Key "your_master_key"
+.\Encrypt.ps1 -Password "your_plaintext_password" -Key "your_master_key"
 ```
 
 This will output something like:

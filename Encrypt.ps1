@@ -1,5 +1,5 @@
 # Encrypt a password using the No-IP updater application
-# Usage: .\encrypt.ps1 <password> <key>
+# Usage: .\Encrypt.ps1 <password> <key>
 
 param(
     [Parameter(Mandatory=$true)][string]$Password,

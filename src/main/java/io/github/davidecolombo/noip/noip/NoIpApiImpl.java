@@ -1,12 +1,8 @@
 package io.github.davidecolombo.noip.noip;
 
-import java.io.IOException;
-import okhttp3.Credentials;
-import okhttp3.Interceptor;
+import io.github.davidecolombo.noip.retrofit.BasicAuthInterceptor;
+import io.github.davidecolombo.noip.retrofit.UserAgentInterceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import retrofit2.Call;
 import retrofit2.Retrofit;
 
 /**
@@ -27,50 +23,5 @@ public class NoIpApiImpl {
                 .addConverterFactory(retrofit2.converter.scalars.ScalarsConverterFactory.create())
                 .client(httpClient.build())
                 .build();
-    }
-
-    /**
-     * Basic authentication interceptor for No-IP API.
-     */
-    private static class BasicAuthInterceptor implements Interceptor {
-        private final String username;
-        private final String password;
-
-        public BasicAuthInterceptor(String username, String password) {
-            this.username = username;
-            this.password = password;
-        }
-
-        @Override
-        public okhttp3.Response intercept(Chain chain) throws IOException {
-            Request originalRequest = chain.request();
-            Request.Builder builder = originalRequest.newBuilder()
-                    .header("Authorization", 
-                            Credentials.basic(username, password));
-
-            Request newRequest = builder.build();
-            return chain.proceed(newRequest);
-        }
-    }
-
-    /**
-     * User-Agent interceptor for No-IP API compliance.
-     */
-    private static class UserAgentInterceptor implements Interceptor {
-        private final String userAgent;
-
-        public UserAgentInterceptor(String userAgent) {
-            this.userAgent = userAgent;
-        }
-
-        @Override
-        public okhttp3.Response intercept(Chain chain) throws IOException {
-            Request originalRequest = chain.request();
-            Request.Builder builder = originalRequest.newBuilder()
-                    .header("User-Agent", userAgent);
-
-            Request newRequest = builder.build();
-            return chain.proceed(newRequest);
-        }
     }
 }

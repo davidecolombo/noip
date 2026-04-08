@@ -17,7 +17,9 @@ import io.github.davidecolombo.noip.NoIpResponse;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URLConnection;
 
 @Slf4j
 public class NoIpUpdater {
@@ -49,6 +51,19 @@ public class NoIpUpdater {
             .build();
 
     /**
+     * Opens an Ipify stream with explicit connect/read timeouts so the
+     * updater cannot hang forever on a stuck or slow endpoint.
+     * Package/public visibility is intentional: it is a seam used by tests
+     * to intercept the outbound network call.
+     */
+    public static InputStream openIpifyStream(String urlString) throws IOException {
+        URLConnection connection = URI.create(urlString).toURL().openConnection();
+        connection.setConnectTimeout(10_000);
+        connection.setReadTimeout(10_000);
+        return connection.getInputStream();
+    }
+
+    /**
      * Automatically updates the DNS at No-IP whenever it changes
      *
      * @param settings No-IP settings
@@ -56,7 +71,7 @@ public class NoIpUpdater {
      * @return return code mapped to the received response
      * @throws IOException I/O exception has occurred
      */
-    private static Integer doUpdate(@NonNull NoIpSettings settings, @NonNull String ip) throws IOException {
+    private static Integer doUpdate(@NonNull NoIpSettings settings, String ip) throws IOException {
         
         // Validate input parameters
         if (ip == null) {
@@ -72,7 +87,7 @@ public class NoIpUpdater {
             throw new IllegalArgumentException("IP '" + ip + "' is not a valid address for protocol: " + protocol.getValue());
         }
 
-        logger.info("Updating No-IP hostname '{}' to IP address '{}'", settings.getHostName(), ip);
+        logger.debug("Updating No-IP hostname '{}' to IP address '{}'", settings.getHostName(), ip);
 
         // Build API and synchronously update No-IP
         long startTime = System.currentTimeMillis();
@@ -187,8 +202,8 @@ public class NoIpUpdater {
         logger.info("Retrieving current IP address from Ipify API");
         IpifyResponse ipifyResponse;
         long startTime = System.currentTimeMillis();
-        try {
-            ipifyResponse = objectMapper.readValue(new URL(ipifyUrl), IpifyResponse.class);
+        try (InputStream ipifyStream = openIpifyStream(ipifyUrl)) {
+            ipifyResponse = objectMapper.readValue(ipifyStream, IpifyResponse.class);
             long duration = System.currentTimeMillis() - startTime;
             logger.info("Retrieved IP address '{}' from Ipify in {}ms", ipifyResponse.getIp(), duration);
             

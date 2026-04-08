@@ -197,8 +197,7 @@ public class NoIpSettings {
 			throw new ConfigurationException("hostName is required and cannot be empty");
 		}
 		
-		if (!DEFAULT_USER_AGENT.equals(effectiveUserAgent) 
-				&& !USER_AGENT_PATTERN.matcher(effectiveUserAgent.trim()).matches()) {
+		if (!USER_AGENT_PATTERN.matcher(effectiveUserAgent.trim()).matches()) {
 			throw new ConfigurationException(
 				String.format("userAgent '%s' is invalid. Expected format: 'Name/Version contact@domain.com'", 
 				effectiveUserAgent)

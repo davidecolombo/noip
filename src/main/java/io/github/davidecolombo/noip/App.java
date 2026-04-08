@@ -27,20 +27,12 @@ public class App {
 	@Option(name = "-encryptor-key", aliases = {"-k"}, usage = "Encryption/decryption key")
 	private String encryptorKey;
 
-	private static class SingletonHolder {
-		public static final App instance = new App();
-	}
-
-	public static App getInstance() {
-		return SingletonHolder.instance;
-	}
-
-	private App() {}
+	public App() {}
 
 	public Integer run(String[] args) {
 		int status = NoIpUpdater.ERROR_RETURN_CODE;
 		try {
-			logger.debug("Parsing command line arguments: {}", args != null ? String.join(" ", args) : "null");
+			logger.debug("Parsing command line arguments: {}", redactArgs(args));
 			new CmdLineParser(this).parseArgument(args);
 
 			if (encryptValue != null) {
@@ -63,13 +55,13 @@ public class App {
 				logger.info("Starting No-IP update process with settings file: {}", fileName);
 			}
 			status = NoIpUpdater.updateFromIpify(fileName);
-			
+
 			if (status == 0) {
 				logger.info("No-IP update completed successfully");
 			} else {
 				logger.warn("No-IP update completed with status code: {}", status);
 			}
-			
+
 		} catch (CmdLineException e) {
 			logger.error("Command line error: {}", e.getMessage());
 			printUsage();
@@ -82,7 +74,7 @@ public class App {
 		} catch (Exception e) {
 			logger.error("Unexpected error: {}", e.getMessage(), e);
 		}
-		
+
 		logger.info("Application exiting with status code: {}", status);
 		return status;
 	}
@@ -135,6 +127,34 @@ public class App {
 		return CryptoUtils.getEncryptionKey();
 	}
 
+	/**
+	 * Masks values that follow sensitive CLI options so debug logs
+	 * never contain the encryption key, the plaintext password,
+	 * or an encrypted blob.
+	 */
+	private static String redactArgs(String[] args) {
+		if (args == null) {
+			return "null";
+		}
+		String[] redacted = new String[args.length];
+		boolean maskNext = false;
+		for (int i = 0; i < args.length; i++) {
+			if (maskNext) {
+				redacted[i] = "***";
+				maskNext = false;
+				continue;
+			}
+			String arg = args[i];
+			redacted[i] = arg;
+			if ("-encryptor-key".equals(arg) || "-k".equals(arg)
+					|| "-encrypt".equals(arg) || "-e".equals(arg)
+					|| "-decrypt".equals(arg) || "-d".equals(arg)) {
+				maskNext = true;
+			}
+		}
+		return String.join(" ", redacted);
+	}
+
 	private void printUsage() {
 		logger.error("Usage:");
 		logger.error("  Update:  -settings <path_to_settings.json>");
@@ -157,6 +177,6 @@ public class App {
 	 */
 	public static void main(String[] args) {
 		SysOutOverSLF4J.sendSystemOutAndErrToSLF4J();
-		System.exit(App.getInstance().run(args));
+		System.exit(new App().run(args));
 	}
 }

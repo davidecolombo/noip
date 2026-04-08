@@ -1,5 +1,5 @@
 # No-IP Java Updater - Interactive Install Script (Windows)
-# Usage: powershell -Command "Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/davidecolombo/noip/master/install.ps1' | Invoke-Expression"
+# Usage: powershell -Command "Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/davidecolombo/noip/master/Install.ps1' | Invoke-Expression"
 
 $version = "1.0.4"
 $jarUrl = "https://github.com/davidecolombo/noip/releases/download/v${version}/noip-${version}-jar-with-dependencies.jar"
