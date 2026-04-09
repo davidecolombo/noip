@@ -6,7 +6,6 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import io.github.davidecolombo.noip.exception.ConfigurationException;
 import io.github.davidecolombo.noip.exception.NoIpException;
-import io.github.davidecolombo.noip.noip.NoIpUpdater;
 import io.github.davidecolombo.noip.utils.CryptoUtils;
 import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
 

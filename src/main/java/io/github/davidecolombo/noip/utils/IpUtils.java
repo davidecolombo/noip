@@ -18,6 +18,9 @@ public class IpUtils {
 		if (ip == null) {
 			return false;
 		}
+		if (ip.indexOf(':') < 0) {
+			return false;
+		}
 		String ipToCheck = ip;
 		int zoneIdIndex = ipToCheck.indexOf('%');
 		if (zoneIdIndex > 0) {

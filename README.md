@@ -16,7 +16,7 @@ This is a Java DNS updater for [No-IP](https://www.noip.com/), an alternative to
 | _userAgent_ | HTTP User-Agent to help No-IP identify your client |
 | _ipProtocol_ | IP protocol to use: `ipv4`, `ipv6`, or `dual` (default) |
 
-Note: when making an update it’s important to configure through the `userAgent` property an HTTP User-Agent in order to help No-IP identify different clients that access the system. Clients that don’t supply a User-Agent risk being blocked from the system. Your user agent should be in the following format:
+Note: when making an update it's important to configure through the `userAgent` property an HTTP User-Agent in order to help No-IP identify different clients that access the system. Clients that don't supply a User-Agent risk being blocked from the system. Your user agent should be in the following format:
 ```
 NameOfUpdateProgram/VersionNumber maintainercontact@domain.com
 ```
@@ -93,7 +93,7 @@ Update your `settings.json` to use the encrypted password:
 ```json
 {
 	"userName": "your_username",
-	"password": "ENC(xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)",
+	"password": "ENC(xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...)",
 	"hostName": "yourhost.ddns.net",
 	"userAgent": "MyApp/1.0 your@email.com"
 }
@@ -192,12 +192,12 @@ SLF4J(I): Connected with provider of type [ch.qos.logback.classic.spi.LogbackSer
 [main] INFO  u.o.l.s.context.SysOutOverSLF4J - Replaced standard System.out and System.err PrintStreams with SLF4JPrintStreams
 [main] INFO  u.o.l.s.context.SysOutOverSLF4J - Redirected System.out and System.err to SLF4J for this context
 [main] INFO  io.github.davidecolombo.noip.App - Starting No-IP update process with settings file: src\test\resources\settings.json
-[main] INFO  i.g.d.noip.noip.NoIpUpdater - No-IP configuration loaded and validated successfully
-[main] INFO  i.g.d.noip.noip.NoIpUpdater - Retrieving current IP address from Ipify API
-[main] INFO  i.g.d.noip.noip.NoIpUpdater - Retrieved IP address '<ip_address>' from Ipify in <time>ms
-[main] INFO  i.g.d.noip.noip.NoIpUpdater - Updating No-IP hostname '<hostname>' to IP address '<ip_address>'
-[main] INFO  i.g.d.noip.noip.NoIpUpdater - No-IP API request completed in <time>ms - HTTP status: 200 OK
-[main] INFO  i.g.d.noip.noip.NoIpUpdater - No-IP response for hostname '<hostname>': nochg <ip_address>
+[main] INFO  i.g.d.noip.NoIpUpdater - No-IP configuration loaded and validated successfully
+[main] INFO  i.g.d.noip.NoIpUpdater - Retrieving current IP address from Ipify API
+[main] INFO  i.g.d.noip.NoIpUpdater - Retrieved IP address '<ip_address>' from Ipify in <time>ms
+[main] INFO  i.g.d.noip.NoIpUpdater - Updating No-IP hostname '<hostname>' to IP address '<ip_address>'
+[main] INFO  i.g.d.noip.NoIpUpdater - No-IP API request completed in <time>ms - HTTP status: 200 OK
+[main] INFO  i.g.d.noip.NoIpUpdater - No-IP response for hostname '<hostname>': nochg <ip_address>
 [main] WARN  io.github.davidecolombo.noip.App - No-IP update completed with status code: 1
 [main] INFO  io.github.davidecolombo.noip.App - Application exiting with status code: 1
 ```

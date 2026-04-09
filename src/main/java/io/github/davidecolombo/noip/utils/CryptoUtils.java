@@ -3,7 +3,6 @@ package io.github.davidecolombo.noip.utils;
 import lombok.experimental.UtilityClass;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.encryption.pbe.config.SimpleStringPBEConfig;
-import org.jasypt.util.text.AES256TextEncryptor;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

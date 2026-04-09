@@ -1,19 +1,18 @@
-package io.github.davidecolombo.noip.noip;
+package io.github.davidecolombo.noip;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.NonNull;
-
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import retrofit2.Response;
 import io.github.davidecolombo.noip.exception.ConfigurationException;
 import io.github.davidecolombo.noip.exception.IpifyException;
 import io.github.davidecolombo.noip.exception.NoIpException;
 import io.github.davidecolombo.noip.ipify.IpifyResponse;
+import io.github.davidecolombo.noip.noip.INoIpApi;
+import io.github.davidecolombo.noip.noip.NoIpApiImpl;
 import io.github.davidecolombo.noip.utils.IpUtils;
 import io.github.davidecolombo.noip.utils.ObjectMapperUtils;
-import io.github.davidecolombo.noip.NoIpSettings;
-import io.github.davidecolombo.noip.NoIpResponse;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import retrofit2.Response;
 
 import java.io.File;
 import java.io.IOException;

@@ -12,7 +12,6 @@ import retrofit2.mock.Calls;
 import io.github.davidecolombo.noip.ipify.IpifyResponse;
 import io.github.davidecolombo.noip.noip.INoIpApi;
 import io.github.davidecolombo.noip.noip.NoIpApiImpl;
-import io.github.davidecolombo.noip.noip.NoIpUpdater;
 import io.github.davidecolombo.noip.utils.ObjectMapperUtils;
 
 import java.io.File;
